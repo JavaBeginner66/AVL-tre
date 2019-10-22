@@ -2,8 +2,9 @@ import java.io.*;
 import java.util.*;
 
 public class AVLTree {
+
     public class AVLNode {
-        private AVLNode left, right, parent;
+        private AVLNode left, right;
         private int height = 1;
         private int value;
 
@@ -11,6 +12,40 @@ public class AVLTree {
             this.value = val;
         }
     }
+
+    // Må gjøres om til javafx gui
+    public static void main(String args[]) {
+        AVLTree t = new AVLTree();
+        AVLNode root = null;
+        while (true) {
+            System.out.println("(1) Insert");
+            System.out.println("(2) Delete");
+
+            try {
+                BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
+                String s = bufferRead.readLine();
+
+                if (Integer.parseInt(s) == 1) {
+                    System.out.print("Value to be inserted: ");
+                    root = t.insert(root, Integer.parseInt(bufferRead.readLine()));
+                }
+                else if (Integer.parseInt(s) == 2) {
+                    System.out.print("Value to be deleted: ");
+                    root = t.deleteNode(root, Integer.parseInt(bufferRead.readLine()));
+                }
+                else {
+                    System.out.println("Invalid choice, try again!");
+                    continue;
+                }
+
+                t.print(root);
+            }
+            catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private int height (AVLNode N) {
         if (N == null)
             return 0;
@@ -288,37 +323,5 @@ public class AVLTree {
 
         }
 
-    }
-
-    public static void main(String args[]) {
-        AVLTree t = new AVLTree();
-        AVLNode root = null;
-        while (true) {
-            System.out.println("(1) Insert");
-            System.out.println("(2) Delete");
-
-            try {
-                BufferedReader bufferRead = new BufferedReader(new InputStreamReader(System.in));
-                String s = bufferRead.readLine();
-
-                if (Integer.parseInt(s) == 1) {
-                    System.out.print("Value to be inserted: ");
-                    root = t.insert(root, Integer.parseInt(bufferRead.readLine()));
-                }
-                else if (Integer.parseInt(s) == 2) {
-                    System.out.print("Value to be deleted: ");
-                    root = t.deleteNode(root, Integer.parseInt(bufferRead.readLine()));
-                }
-                else {
-                    System.out.println("Invalid choice, try again!");
-                    continue;
-                }
-
-                t.print(root);
-            }
-            catch(IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 }
