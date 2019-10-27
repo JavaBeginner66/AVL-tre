@@ -16,7 +16,10 @@ import javafx.stage.Stage;
  *
  @author Jan Andreas Sletta og Sindre Haavaldsen
   *
+  * Programmet lager et AVLTre av Integer verdier
+  * som blir tegna på et pane
   *
+  * Klassen står for det grafiske og legger opp komponenter
   *
   */
 
@@ -24,20 +27,20 @@ public class AvlView extends Application {
 
     private final static int skjermHøyde = 800;
     private final static int skjermBredde = 1400;
-    private final double radius = 15;
-    private final double høydeAvstand = 45;
-    private Pane tegneBrett;
+    private final double radius = 15;           // Radius på tegnet node
+    private final double høydeAvstand = 45;     // Høyde avstand mellom hver node
+    private Pane tegneBrett;                    // Panet AVLTreet blir tegnet på
 
-    private TextField nyeTall;
-    private Button settInnTall;
-    private Button leggInnTilfeldigeTall;
-    private Button slettTre;
+    private TextField nyeTall;                  // Textfield brukeren legger tall inn i
+    private Button settInnTall;                 // Knapp som legger inn tall fra nyeTall Textfielf
+    private Button leggInnTilfeldigeTall;       // Knapp som legger inn 10 tilfeldige tall
+    private Button slettTre;                    // Sletter treet
 
-    private AVLTre tre = new AVLTre();
-    private AVLTre.AVLNode root;
+    private AVLTre tre = new AVLTre();          // Instans av klassen AVLTre som inneholder metoder for logikken
+    private AVLTre.AVLNode root;                // Instans av node klasse (root noden)
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage){
         BorderPane pane = new BorderPane();
         tegneBrett = new Pane();
         pane.setCenter(tegneBrett);
@@ -67,7 +70,7 @@ public class AvlView extends Application {
         });
     }
 
-    /** En public versjon av tegnTre som kaller privat-versjonen*/
+    /** En public versjon av tegnTre som kaller private-versjonen*/
     public void tegnTre() {
         tegneBrett.getChildren().clear();
         if (root != null) {
@@ -77,6 +80,17 @@ public class AvlView extends Application {
     }
 
 
+    /**
+     *
+     * Metoden tar inn root noden og tegner ut treet fullstendig
+     * som et rekursivt kall
+     *
+     * @param      root             root noden
+     * @param      x                x posisjon til node
+     * @param      y                y posisjon til node
+     * @param      breddeAvstand    Bredde-avstanden mellom hver node
+     *
+     */
     private void tegnTre(AVLTre.AVLNode root,
                          double x, double y, double breddeAvstand) {
         if (root.left != null) {
@@ -102,7 +116,9 @@ public class AvlView extends Application {
     }
 
     /**
-     *  Metoden legger opp en GridPane som inneholder knapper og tekstfelt
+     *  Metoden legger opp et GridPane som inneholder knapper og tekstfelt
+     *
+     * @return Gridpane der knappene ligger
      */
     private GridPane setInfoVindu(){
         GridPane grid = new GridPane();
