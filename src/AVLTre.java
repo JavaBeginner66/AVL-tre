@@ -1,126 +1,143 @@
-import java.io.*;
-import java.util.*;
+/**
+ * Klassen står for all logikk som manipulerer AVLTreet
+ */
+
 
 public class AVLTre {
 
+    /**
+     * Node-klassa (Nesta så AVLTre skal få lettere tilgang)
+     */
     public class AVLNode {
-        public AVLNode left, right;
-        public int height = 1;
-        public int value;
+        public AVLNode venstreNode, hoyreNode; // Referanser til høyre og venstre node
+        public int hoyde = 1;                  // Høyde på node
+        public int verdi;                      // Verdi på node
 
-        private AVLNode(int val) {
-            this.value = val;
+        private AVLNode(int verdi) {
+            this.verdi = verdi;
         }
     }
 
-    private int height (AVLNode N) {
-        if (N == null)
-            return 0;
-        return N.height;
-    }
-
+    /**
+     *
+     * @param node referanse til node
+     * @param value Ny verdi som skal bli lagt inn
+     *
+     * @return new AVLNode(): Om ingen node fins på plassen nåværende referanse ligger,
+     * lag ny node med ny verdi. (Denne vil bare treffe etter rekursjonen kommer til en ledig plass i treet.)
+     * @return rotasjon(): Om noden er ubalansert, vil disse metodene gi noden en ny referanse av en balansert node.
+     * @return node: Returnerer den originale noden om den ikke er ubalansert.
+     */
     public AVLNode insert(AVLNode node, int value) {
-        /* 1.  Perform the normal BST rotation */
+        /* Om node er null, legg inn ny node */
         if (node == null) {
             return(new AVLNode(value));
         }
 
-        if (value < node.value)
-            node.left  = insert(node.left, value);
+        /*
+        Sjekker om node-verdi er høyere eller mindre, og gjør et rekursivt kall
+        til referansen stopper på null som betyr at plassen er ledig.
+        */
+        if (value < node.verdi)
+            node.venstreNode = insert(node.venstreNode, value);
         else
-            node.right = insert(node.right, value);
+            node.hoyreNode = insert(node.hoyreNode, value);
 
-        /* 2. Update height of this ancestor node */
-        node.height = Math.max(height(node.left), height(node.right)) + 1;
+        /* 2. Oppdater høyden på node */
+        node.hoyde = Math.max(height(node.venstreNode), height(node.hoyreNode)) + 1;
 
-        /* 3. Get the balance factor of this ancestor node to check whether
-           this node became unbalanced */
+        /* 3. Hent balansen til denne noden for å sjekke om den ble ubalansert */
         int balance = getBalance(node);
 
-        // If this node becomes unbalanced, then there are 4 cases
+        /* Om den ble ubalansert, må vi gjennom 4 sjekker */
 
-        // Left Left Case
-        if (balance > 1 && value < node.left.value){
-            //System.out.println(value + " " + node.left.value + " " + node.value);
+        // Ubalansert 2 nodes mot venstre
+        if (balance > 1 && value < node.venstreNode.verdi){
             return rightRotate(node);
         }
 
-
-        // Right Right Case
-        if (balance < -1 && value > node.right.value)
+        // Ubalansert 2 nodes mot høyre
+        if (balance < -1 && value > node.hoyreNode.verdi)
             return leftRotate(node);
 
-        // Left Right Case
-        if (balance > 1 && value > node.left.value)
+        // Ubalansert mot først venstre så høyre
+        if (balance > 1 && value > node.venstreNode.verdi)
         {
-            node.left =  leftRotate(node.left);
+            node.venstreNode =  leftRotate(node.venstreNode);
             return rightRotate(node);
         }
 
-        // Right Left Case
-        if (balance < -1 && value < node.right.value)
+        // Ubalansert mot først høyre så venstre
+        if (balance < -1 && value < node.hoyreNode.verdi)
         {
-            node.right = rightRotate(node.right);
+            node.hoyreNode = rightRotate(node.hoyreNode);
             return leftRotate(node);
         }
 
-        /* return the (unchanged) node pointer */
+        /* returnerer den uforandra noden */
         return node;
     }
 
+    /**
+     *
+     * @param y referanse til node
+     * @return returnerer node x som erstatter parameter y med en balansert versjon
+     */
     private AVLNode rightRotate(AVLNode y) {
 
-        AVLNode x = y.left;
-        AVLNode T2 = x.right;
+        AVLNode x = y.venstreNode;
+        AVLNode T2 = x.hoyreNode;
 
-        // Perform rotation
-        x.right = y;
-        y.left = T2;
+        // Gjør rotasjon
+        x.hoyreNode = y;
+        y.venstreNode = T2;
 
-        // Update heights
-        y.height = Math.max(height(y.left), height(y.right))+1;
-        x.height = Math.max(height(x.left), height(x.right))+1;
+        // Oppdater høyder
+        y.hoyde = Math.max(height(y.venstreNode), height(y.hoyreNode))+1;
+        x.hoyde = Math.max(height(x.venstreNode), height(x.hoyreNode))+1;
 
-        // Return new root
+        // Returner ny balansert root
         return x;
     }
 
+    /**
+     *
+     * @param x referanse til node
+     * @return returnerer node x som erstatter parameter x med en balansert versjon
+     */
     private AVLNode leftRotate(AVLNode x) {
-        AVLNode y = x.right;
-        AVLNode T2 = y.left;
+        AVLNode y = x.hoyreNode;
+        AVLNode T2 = y.venstreNode;
 
-        // Perform rotation
-        y.left = x;
-        x.right = T2;
+        // Gjør rotasjon
+        y.venstreNode = x;
+        x.hoyreNode = T2;
 
-        //  Update heights
-        x.height = Math.max(height(x.left), height(x.right))+1;
-        y.height = Math.max(height(y.left), height(y.right))+1;
+        //  Oppdater høyder
+        x.hoyde = Math.max(height(x.venstreNode), height(x.hoyreNode))+1;
+        y.hoyde = Math.max(height(y.venstreNode), height(y.hoyreNode))+1;
 
-        // Return new root
+        // Returner ny balansert root
         return y;
     }
 
-    // Get Balance factor of node N
+    /**
+     * @param N referanse til node
+     * @Return returnerer høyden på node
+     */
+    private int height (AVLNode N) {
+        if (N == null)
+            return 0;
+        return N.hoyde;
+    }
+
+    /**
+     * @param N referanse til node
+     * @return returnerer høyden på node for å sjekke om den er ubalansert
+     */
     private int getBalance(AVLNode N) {
         if (N == null)
             return 0;
-        return height(N.left) - height(N.right);
-    }
-
-    public void preOrder(AVLNode root) {
-        if (root != null) {
-            preOrder(root.left);
-            System.out.printf("%d ", root.value);
-            preOrder(root.right);
-        }
-    }
-
-    private AVLNode minValueNode(AVLNode node) {
-        AVLNode current = node;
-        /* loop down to find the leftmost leaf */
-        while (current.left != null)
-            current = current.left;
-        return current;
+        return height(N.venstreNode) - height(N.hoyreNode);
     }
 }

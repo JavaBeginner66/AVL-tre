@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -14,7 +15,7 @@ import javafx.stage.Stage;
 
 /**
  *
- @author Jan Andreas Sletta og Sindre Haavaldsen
+ @author Jan Andreas Sletta og Sindre Haavaldsen (Gruppe 7)
   *
   * Programmet lager et AVLTre av Integer verdier
   * som blir tegna på et pane
@@ -35,6 +36,7 @@ public class AvlView extends Application {
     private Button settInnTall;                 // Knapp som legger inn tall fra nyeTall Textfielf
     private Button leggInnTilfeldigeTall;       // Knapp som legger inn 10 tilfeldige tall
     private Button slettTre;                    // Sletter treet
+    private ColorPicker nodeFarge;              // Velger farge på node
 
     private AVLTre tre = new AVLTre();          // Instans av klassen AVLTre som inneholder metoder for logikken
     private AVLTre.AVLNode root;                // Instans av node klasse (root noden)
@@ -93,26 +95,26 @@ public class AvlView extends Application {
      */
     private void tegnTre(AVLTre.AVLNode root,
                          double x, double y, double breddeAvstand) {
-        if (root.left != null) {
+        if (root.venstreNode != null) {
             // Tegn en linje til noden til venstre
             tegneBrett.getChildren().add(new Line(x - breddeAvstand, y + høydeAvstand, x, y));
             // Tegn subtreet til venstre rekursivt
-            tegnTre(root.left, x - breddeAvstand, y + høydeAvstand, breddeAvstand / 2);
+            tegnTre(root.venstreNode, x - breddeAvstand, y + høydeAvstand, breddeAvstand / 2);
         }
 
-        if (root.right != null) {
+        if (root.hoyreNode != null) {
             // Tegn en linje til noden til høyre
             tegneBrett.getChildren().add(new Line(x + breddeAvstand, y + høydeAvstand, x, y));
             // Tegn subtreet til høyre rekursivt
-            tegnTre(root.right, x + breddeAvstand, y + høydeAvstand, breddeAvstand / 2);
+            tegnTre(root.hoyreNode, x + breddeAvstand, y + høydeAvstand, breddeAvstand / 2);
         }
 
         // Tegn en node som en farget sirkel med tall
         Circle circle = new Circle(x, y, radius);
-        circle.setFill(Color.LIGHTGREEN);
+        circle.setFill(nodeFarge.getValue());
         circle.setStroke(Color.BLACK);
         tegneBrett.getChildren().addAll(circle,
-                new Text(x-10, y + 4, root.value + ""));
+                new Text(x-10, y + 4, root.verdi + ""));
     }
 
     /**
@@ -130,11 +132,14 @@ public class AvlView extends Application {
         settInnTall = new Button("Sett inn");
         leggInnTilfeldigeTall = new Button("Legg inn 10 tilfeldige tall");
         slettTre = new Button("Slett tre");
+        nodeFarge = new ColorPicker();
+        nodeFarge.setValue(Color.LIGHTGREEN);
 
         grid.add(nyeTall, 0,0);
         grid.add(settInnTall, 1, 0);
         grid.add(leggInnTilfeldigeTall, 2, 0);
         grid.add(slettTre, 3, 0);
+        grid.add(nodeFarge, 4, 0);
 
         return grid;
     }
